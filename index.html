@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Красное–Чёрное | Мягкая математика</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: 'Segoe UI', 'Montserrat', sans-serif;
+    background: #0A1628;
+    min-height: 100vh;
+    padding: 20px;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    transition: background 0.3s;
+}
+body.theme-light { background: #F0F7F5; color: #1E3A3A; }
+body.theme-dark { background: #0A1628; color: #fff; }
+body.theme-forest { background: #0F2A1F; color: #E0F0E8; }
+body.theme-sunset { background: #2A0F1F; color: #F0E0E8; }
+.app {
+    max-width: 900px;
+    width: 100%;
+    background: linear-gradient(145deg, #1A2A3A, #0A1628);
+    border-radius: 32px;
+    padding: 30px;
+    box-shadow: 0 20px 60px rgba(42, 183, 169, 0.25);
+    border: 2px solid #2AB7A9;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+}
+body.theme-light .app {
+    background: linear-gradient(145deg, #FFFFFF, #F0F7F5);
+    box-shadow: 0 20px 60px rgba(42, 183, 169, 0.15);
+}
+body.theme-forest .app { background: linear-gradient(145deg, #1A3A2A, #0F2A1F); border-color: #4ECDC4; }
+body.theme-sunset .app { background: linear-gradient(145deg, #3A1A2A, #2A0F1F); border-color: #F4A261; }
+.app::after {
+    content: "МЯГКАЯ МАТЕМАТИКА • КРАСНОЕ-ЧЁРНОЕ • vk.com/smartskillsmaria";
+    position: absolute;
+    bottom: 6px;
+    left: 20px;
+    font-size: 10px;
+    color: rgba(42, 183, 169, 0.08);
+    font-weight: 600;
+    pointer-events: none;
+    letter-spacing: 1px;
+}
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px 20px;
+    margin-bottom: 18px;
+    position: relative;
+    z-index: 1;
+}
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-icon { font-size: 34px; }
+.logo-text { font-size: 20px; font-weight: 800; color: #2AB7A9; }
+.logo-sub { font-size: 12px; color: #8AA8A5; margin-top: -2px; }
+.stats { display: flex; gap: 10px; flex-wrap: wrap; }
+.stat-box {
+    background: rgba(42, 183, 169, 0.1);
+    border: 1px solid #2AB7A9;
+    border-radius: 10px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #2AB7A9;
+}
+.stat-box span { color: #F4A261; font-weight: 800; }
+.progress-bar {
+    width: 100%;
+    height: 10px;
+    background: #0A1628;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    border: 1px solid #2AB7A9;
+    position: relative;
+    z-index: 1;
+}
+body.theme-light .progress-bar { background: #E0EDE8; }
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #e67e7e, #2AB7A9);
+    width: 0%;
+    transition: width 0.5s ease;
+}
+.screen { display: none; animation: fadeIn 0.4s ease; position: relative; z-index: 1; }
+.screen.active { display: block; }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+h1 { font-size: 26px; color: #2AB7A9; margin-bottom: 8px; }
+h2 { font-size: 20px; color: #F4A261; margin-bottom: 12px; }
+.subtitle { color: #8AA8A5; font-size: 14px; margin-bottom: 18px; }
+.arifmos {
+    background: rgba(42, 183, 169, 0.1);
+    border-left: 4px solid #2AB7A9;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 18px;
+    font-size: 15px;
+    line-height: 1.7;
+}
+.arifmos strong { color: #2AB7A9; }
+.rules {
+    background: rgba(10, 22, 40, 0.8);
+    border: 1px solid rgba(42, 183, 169, 0.3);
+    border-radius: 16px;
+    padding: 18px 20px;
+    margin-bottom: 18px;
+}
+body.theme-light .rules { background: #FFFFFF; }
+.rules-title {
+    font-weight: 700;
+    color: #F4A261;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+.rules-list {
+    list-style: none;
+    font-size: 14px;
+    line-height: 1.8;
+}
+.rules-list li { padding-left: 24px; position: relative; }
+.rules-list li::before {
+    content: "▸";
+    position: absolute;
+    left: 0;
+    color: #2AB7A9;
+    font-weight: 700;
+}
+.settings-section { margin-bottom: 18px; }
+.settings-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: #F4A261;
+    margin-bottom: 10px;
+}
+.options-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.option-chip {
+    padding: 10px 20px;
+    border-radius: 12px;
+    border: 2px solid rgba(42, 183, 169, 0.4);
+    background: rgba(42, 183, 169, 0.08);
+    color: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.option-chip:hover { border-color: #2AB7A9; background: rgba(42, 183, 169, 0.2); }
+.option-chip.active { background: #2AB7A9; color: #0A1628; border-color: #2AB7A9; }
+.theme-chip {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    cursor: pointer;
+    transition: 0.2s;
+    padding: 0;
+}
+.theme-chip:hover { transform: scale(1.1); }
+.theme-chip.active {
+    border-color: #F4A261;
+    transform: scale(1.15);
+    box-shadow: 0 0 15px rgba(244, 162, 97, 0.6);
+}
+.theme-dark-bg { background: #0A1628; }
+.theme-light-bg { background: #F0F7F5; }
+.theme-forest-bg { background: #0F2A1F; }
+.theme-sunset-bg { background: #2A0F1F; }
+.btn {
+    display: inline-block;
+    padding: 12px 28px;
+    border-radius: 14px;
+    border: none;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: 0.2s;
+    margin: 6px 4px;
+}
+.btn-primary { background: #2AB7A9; color: #0A1628; }
+.btn-primary:hover { background: #1f9f92; transform: scale(1.02); }
+.btn-gold { background: #F4A261; color: #0A1628; }
+.btn-gold:hover { background: #e08f4a; transform: scale(1.02); }
+.btn-outline { background: transparent; border: 2px solid #2AB7A9; color: #2AB7A9; }
+.btn-outline:hover { background: rgba(42, 183, 169, 0.15); }
+.game-field {
+    display: grid;
+    gap: 10px;
+    margin: 20px 0;
+    padding: 20px;
+    background: rgba(10, 22, 40, 0.6);
+    border-radius: 20px;
+    border: 1px solid rgba(42, 183, 169, 0.2);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+body.theme-light .game-field { background: rgba(255, 255, 255, 0.7); }
+.cell {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.15s;
+    user-select: none;
+    font-family: 'Montserrat', sans-serif;
+}
+.cell.red {
+    background: linear-gradient(135deg, #e67e7e, #c0392b);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(230, 126, 126, 0.3);
+}
+.cell.black {
+    background: linear-gradient(135deg, #2d2d2d, #0a0a0a);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+.cell:hover {
+    transform: scale(1.08);
+    z-index: 2;
+    box-shadow: 0 0 0 3px #F4A261, 0 0 20px rgba(244, 162, 97, 0.6);
+}
+.cell.found {
+    opacity: 0.12;
+    transform: scale(0.85);
+    pointer-events: none;
+}
+.cell.error {
+    background: #F4A261 !important;
+    color: #0A1628 !important;
+    animation: shake 0.3s;
+}
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
+.timer-large {
+    text-align: center;
+    font-size: 36px;
+    font-weight: 900;
+    color: #2AB7A9;
+    margin: 16px 0;
+    font-family: 'Montserrat', sans-serif;
+}
+.turn-indicator {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 800;
+    margin: 10px 0;
+    min-height: 28px;
+}
+.turn-red { color: #e67e7e; }
+.turn-black { color: #fff; }
+body.theme-light .turn-black { color: #1E3A3A; }
+.final { text-align: center; padding: 30px 10px; }
+.final h2 { font-size: 28px; margin-bottom: 12px; }
+.final .score { font-size: 52px; font-weight: 900; color: #2AB7A9; margin: 10px 0; }
+.badge {
+    display: inline-block;
+    background: rgba(244, 162, 97, 0.2);
+    border: 1px solid #F4A261;
+    border-radius: 30px;
+    padding: 6px 18px;
+    font-size: 14px;
+    color: #F4A261;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+.final-stats {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin: 20px 0;
+}
+.final-stat {
+    background: rgba(42, 183, 169, 0.1);
+    border: 1px solid #2AB7A9;
+    border-radius: 14px;
+    padding: 12px 24px;
+    min-width: 120px;
+}
+.final-stat .value { font-size: 28px; font-weight: 900; color: #F4A261; }
+.final-stat .label { font-size: 12px; color: #8AA8A5; margin-top: 4px; }
+.footer {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(42, 183, 169, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 12px;
+    color: #8AA8A5;
+    position: relative;
+    z-index: 1;
+}
+.footer a { color: #2AB7A9; font-weight: 700; text-decoration: none; }
+.footer a:hover { text-decoration: underline; }
+@media (max-width: 550px) {
+    .app { padding: 16px; }
+    h1 { font-size: 20px; }
+    .game-field { gap: 6px; padding: 12px; }
+    .cell { border-radius: 8px; }
+    .timer-large { font-size: 28px; }
+    .final-stats { gap: 12px; }
+    .final-stat { padding: 8px 16px; min-width: 90px; }
+    .option-chip { padding: 8px 14px; font-size: 13px; }
+}
+</style>
+</head>
+<body class="theme-dark">
+
+<div class="app" id="app">
+    <div class="header">
+        <div class="logo">
+            <div class="logo-icon">🔴⚫</div>
+            <div>
+                <div class="logo-text">Мягкая математика</div>
+                <div class="logo-sub">Тренажёр «Красное–Чёрное»</div>
+            </div>
+        </div>
+        <div class="stats">
+            <div class="stat-box">⚡ Очки: <span id="scoreDisplay">0</span></div>
+            <div class="stat-box">🎯 Найдено: <span id="foundDisplay">0</span>/<span id="totalDisplay">18</span></div>
+        </div>
+    </div>
+
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+    <!-- ЭКРАН 1: СТАРТ -->
+    <div class="screen active" id="screenStart">
+        <h1>🔴 КРАСНОЕ – ЧЁРНОЕ ⚫</h1>
+        <div class="subtitle">Тренажёр для развития внимания, переключения и скорости мышления</div>
+        <div class="arifmos">
+            <strong>Арифмос:</strong> «На поле лежат красные и чёрные числа с одинаковыми номерами. Красные нужно находить по <strong>возрастанию</strong> (1 → 9), а чёрные — по <strong>убыванию</strong> (9 → 1). Ходы чередуются: сначала красное 1, потом чёрное 9, потом красное 2, потом чёрное 8... <strong>Без подсказок!</strong> Ты сам должен помнить, что искать следующим.»
+        </div>
+
+        <div class="settings-section">
+            <div class="settings-label">🎚️ Уровень сложности</div>
+            <div class="options-row">
+                <button class="option-chip active" data-level="easy" onclick="selectLevel('easy')">
+                    🟢 Лёгкий (3×3, 1–9)
+                </button>
+                <button class="option-chip" data-level="medium" onclick="selectLevel('medium')">
+                    🟡 Средний (4×4, 1–16)
+                </button>
+                <button class="option-chip" data-level="hard" onclick="selectLevel('hard')">
+                    🟠 Сложный (5×5, 1–25)
+                </button>
+                <button class="option-chip" data-level="expert" onclick="selectLevel('expert')">
+                    🔴 Эксперт (6×6, 1–36)
+                </button>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <div class="settings-label">🎨 Дизайн</div>
+            <div class="options-row">
+                <button class="theme-chip theme-dark-bg active" data-theme="dark" onclick="selectTheme('dark')" title="Тёмная тема"></button>
+                <button class="theme-chip theme-light-bg" data-theme="light" onclick="selectTheme('light')" title="Светлая тема"></button>
+                <button class="theme-chip theme-forest-bg" data-theme="forest" onclick="selectTheme('forest')" title="Лесная тема"></button>
+                <button class="theme-chip theme-sunset-bg" data-theme="sunset" onclick="selectTheme('sunset')" title="Закат"></button>
+            </div>
+        </div>
+
+        <div class="rules">
+            <div class="rules-title">📋 Правила игры</div>
+            <ul class="rules-list" id="rulesList"></ul>
+        </div>
+        <button class="btn btn-primary" onclick="startGame()">🚀 Начать игру</button>
+    </div>
+
+    <!-- ЭКРАН 2: ИГРА -->
+    <div class="screen" id="screenGame">
+        <div class="timer-large" id="timerDisplay">0.0 с</div>
+        <div class="turn-indicator" id="turnIndicator"></div>
+        <div class="game-field" id="gameField"></div>
+        <button class="btn btn-outline" onclick="resetGame()">🔄 Сбросить</button>
+    </div>
+
+    <!-- ЭКРАН 3: ФИНАЛ -->
+    <div class="screen" id="screenFinal">
+        <div class="final">
+            <div class="badge">🏆 ФИНИШ</div>
+            <h2>Все числа найдены!</h2>
+            <div class="score" id="finalScore">0</div>
+            <p style="color:#8AA8A5;">энергетических очков</p>
+            <div class="final-stats">
+                <div class="final-stat">
+                    <div class="value" id="finalTime">0.0</div>
+                    <div class="label">Время (сек)</div>
+                </div>
+                <div class="final-stat">
+                    <div class="value" id="finalErrors">0</div>
+                    <div class="label">Ошибок</div>
+                </div>
+                <div class="final-stat">
+                    <div class="value" id="finalAccuracy">100%</div>
+                    <div class="label">Точность</div>
+                </div>
+            </div>
+            <div id="finalMessage" style="color:#F4A261;font-weight:700;margin:16px 0;font-size:18px;"></div>
+            <button class="btn btn-gold" onclick="resetGame()">🔄 Играть снова</button>
+        </div>
+    </div>
+
+    <div class="footer">
+        <span>🧮 Мягкая математика • Красное–Чёрное</span>
+        <span>
+            <a href="https://vk.com/smartskillsmaria" target="_blank">🌐 Подписывайся</a>
+            •
+            <a href="https://vk.com/im/convo/-229273902?entrypoint=community_page&tab=all" target="_blank">✉️ Мария Абрамова</a>
+        </span>
+    </div>
+</div>
+
+<script>
+// ================================================================
+//  КОНФИГУРАЦИЯ УРОВНЕЙ
+//  Красные: 1..N, Чёрные: 1..N (одинаковые номера!)
+// ================================================================
+const LEVELS = {
+    easy:   { size: 3, n: 9,  name: 'Лёгкий' },
+    medium: { size: 4, n: 16, name: 'Средний' },
+    hard:   { size: 5, n: 25, name: 'Сложный' },
+    expert: { size: 6, n: 36, name: 'Эксперт' }
+};
+
+// ================================================================
+//  СОСТОЯНИЕ
+// ================================================================
+let state = {
+    running: false,
+    score: 0,
+    found: 0,
+    errors: 0,
+    startTime: 0,
+    timerInterval: null,
+    redIndex: 0,        // сколько красных найдено (0..n-1)
+    blackIndex: 0,      // сколько чёрных найдено (0..n-1)
+    turn: 'red',
+    level: 'easy',
+    theme: 'dark',
+    total: 18,
+    n: 9
+};
+
+// ================================================================
+//  ВЫБОР УРОВНЯ
+// ================================================================
+function selectLevel(level) {
+    state.level = level;
+    document.querySelectorAll('[data-level]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.level === level);
+    });
+    updateRules();
+}
+
+function selectTheme(theme) {
+    state.theme = theme;
+    document.body.className = 'theme-' + theme;
+    document.querySelectorAll('[data-theme]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.theme === theme);
+    });
+}
+
+function updateRules() {
+    const cfg = LEVELS[state.level];
+    const n = cfg.n;
+    const rulesList = document.getElementById('rulesList');
+    rulesList.innerHTML = `
+        <li>Поле <strong>${cfg.size}×${cfg.size}</strong> — <strong>${n} красных</strong> и <strong>${n} чёрных</strong> чисел</li>
+        <li><strong>Красные</strong> — номера от <strong>1 до ${n}</strong>, ищи по <strong>возрастанию</strong></li>
+        <li><strong>Чёрные</strong> — номера от <strong>1 до ${n}</strong>, ищи по <strong>убыванию</strong>: ${n} → 1</li>
+        <li>Чередуй: <span style="color:#e67e7e">красное 1</span> → <span style="color:#fff">чёрное ${n}</span> → <span style="color:#e67e7e">красное 2</span> → <span style="color:#fff">чёрное ${n-1}</span>...</li>
+        <li><strong>Без подсказок!</strong> Ты сам должен помнить, что искать следующим</li>
+        <li>Ошибка — число мигает красным, −5 очков</li>
+    `;
+    document.getElementById('totalDisplay').textContent = n * 2;
+}
+
+// ================================================================
+//  ПЕРЕМЕШИВАНИЕ
+// ================================================================
+function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+// ================================================================
+//  ОТРИСОВКА ПОЛЯ
+// ================================================================
+function renderField() {
+    const field = document.getElementById('gameField');
+    field.innerHTML = '';
+    field.style.gridTemplateColumns = `repeat(${LEVELS[state.level].size}, 1fr)`;
+
+    const cfg = LEVELS[state.level];
+    const n = cfg.n;
+
+    // Красные: 1..n, Чёрные: 1..n (одинаковые номера)
+    const red = [];
+    const black = [];
+    for (let i = 1; i <= n; i++) {
+        red.push(i);
+        black.push(i);
+    }
+
+    const redShuffled = shuffle([...red]);
+    const blackShuffled = shuffle([...black]);
+
+    const allCells = [
+        ...redShuffled.map(num => ({ number: num, color: 'red' })),
+        ...blackShuffled.map(num => ({ number: num, color: 'black' }))
+    ];
+
+    const shuffledCells = shuffle(allCells);
+    const fontSize = cfg.size === 3 ? '26px' : cfg.size === 4 ? '22px' : cfg.size === 5 ? '18px' : '15px';
+
+    shuffledCells.forEach(cellData => {
+        const cell = document.createElement('div');
+        cell.className = 'cell ' + cellData.color;
+        cell.dataset.number = cellData.number;
+        cell.dataset.color = cellData.color;
+        cell.style.fontSize = fontSize;
+        cell.textContent = cellData.number;
+        cell.onclick = () => clickCell(cellData.number, cellData.color, cell);
+        field.appendChild(cell);
+    });
+
+    state.redIndex = 0;
+    state.blackIndex = 0;
+    state.turn = 'red';
+    state.total = n * 2;
+    state.n = n;
+
+    updateTurnIndicator();
+}
+
+// ================================================================
+//  ИНДИКАТОР ХОДА (без подсказки числа!)
+// ================================================================
+function updateTurnIndicator() {
+    const el = document.getElementById('turnIndicator');
+    if (!state.running) { el.textContent = ''; return; }
+    if (state.turn === 'red') {
+        el.innerHTML = '🔴 Ход: <span class="turn-red">КРАСНОЕ</span>';
+    } else {
+        el.innerHTML = '⚫ Ход: <span class="turn-black">ЧЁРНОЕ</span>';
+    }
+}
+
+// ================================================================
+//  СТАРТ
+// ================================================================
+function startGame() {
+    state.running = true;
+    state.score = 0;
+    state.found = 0;
+    state.errors = 0;
+    state.startTime = Date.now();
+
+    document.getElementById('scoreDisplay').textContent = '0';
+    document.getElementById('foundDisplay').textContent = '0';
+    document.getElementById('progressFill').style.width = '0%';
+
+    renderField();
+
+    document.getElementById('screenStart').classList.remove('active');
+    document.getElementById('screenGame').classList.add('active');
+    document.getElementById('screenFinal').classList.remove('active');
+
+    const timerEl = document.getElementById('timerDisplay');
+    state.timerInterval = setInterval(() => {
+        const elapsed = (Date.now() - state.startTime) / 1000;
+        timerEl.textContent = elapsed.toFixed(1) + ' с';
+    }, 100);
+}
+
+// ================================================================
+//  КЛИК
+// ================================================================
+function clickCell(number, color, cellEl) {
+    if (!state.running) return;
+    if (cellEl.classList.contains('found')) return;
+
+    let isCorrect = false;
+
+    if (state.turn === 'red' && color === 'red') {
+        // Ожидаем красное: redIndex + 1
+        const expectedRed = state.redIndex + 1;
+        if (number === expectedRed) {
+            isCorrect = true;
+            state.redIndex++;
+        }
+    } else if (state.turn === 'black' && color === 'black') {
+        // Ожидаем чёрное: n - blackIndex
+        const expectedBlack = state.n - state.blackIndex;
+        if (number === expectedBlack) {
+            isCorrect = true;
+            state.blackIndex++;
+        }
+    }
+
+    if (isCorrect) {
+        cellEl.classList.add('found');
+        state.found++;
+        state.score += 10;
+        document.getElementById('foundDisplay').textContent = state.found;
+        document.getElementById('scoreDisplay').textContent = state.score;
+
+        state.turn = state.turn === 'red' ? 'black' : 'red';
+        updateTurnIndicator();
+
+        if (state.found >= state.total) {
+            finishGame();
+        }
+    } else {
+        state.errors++;
+        state.score = Math.max(0, state.score - 5);
+        document.getElementById('scoreDisplay').textContent = state.score;
+
+        cellEl.classList.add('error');
+        setTimeout(() => cellEl.classList.remove('error'), 400);
+    }
+
+    const pct = (state.found / state.total) * 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+}
+
+// ================================================================
+//  ФИНАЛ
+// ================================================================
+function finishGame() {
+    state.running = false;
+    clearInterval(state.timerInterval);
+
+    const elapsed = (Date.now() - state.startTime) / 1000;
+    const total = state.found + state.errors;
+    const accuracy = total > 0 ? Math.round((state.found / total) * 100) : 100;
+
+    document.getElementById('finalScore').textContent = state.score;
+    document.getElementById('finalTime').textContent = elapsed.toFixed(1);
+    document.getElementById('finalErrors').textContent = state.errors;
+    document.getElementById('finalAccuracy').textContent = accuracy + '%';
+
+    let msg = '';
+    if (accuracy >= 95) msg = '🏆 Идеально! Ты — Мастер внимания!';
+    else if (accuracy >= 85) msg = '⭐ Отличный результат! Ты почти у цели.';
+    else if (accuracy >= 70) msg = '📚 Хорошо, но есть над чем поработать.';
+    else msg = '💪 Не сдавайся! Тренируйся и всё получится.';
+
+    document.getElementById('finalMessage').textContent = msg;
+
+    document.getElementById('screenGame').classList.remove('active');
+    document.getElementById('screenFinal').classList.add('active');
+}
+
+// ================================================================
+//  СБРОС
+// ================================================================
+function resetGame() {
+    state.running = false;
+    if (state.timerInterval) clearInterval(state.timerInterval);
+    document.getElementById('screenGame').classList.remove('active');
+    document.getElementById('screenFinal').classList.remove('active');
+    document.getElementById('screenStart').classList.add('active');
+    document.getElementById('timerDisplay').textContent = '0.0 с';
+    document.getElementById('turnIndicator').textContent = '';
+    document.getElementById('progressFill').style.width = '0%';
+    document.getElementById('foundDisplay').textContent = '0';
+    document.getElementById('scoreDisplay').textContent = '0';
+    updateRules();
+}
+
+// ================================================================
+//  ЗАПУСК
+// ================================================================
+updateRules();
+</script>
+
+</body>
+</html>
